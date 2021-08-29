@@ -1,0 +1,82 @@
+var cvs = document.getElementById("canvas");
+var ctx = cvs.getContext("2d");
+
+var bird = new Image();
+var bg = new Image();
+var fg = new Image();
+var pipeNorth = new Image();
+var pipeSouth = new Image();
+
+bird.src = "images/bird.png";
+bg.src = "images/bg.png";
+fg.src = "images/fg.png";
+pipeNorth.src = "images/pipeNorth.png";
+pipeSouth.src = "images/pipeSouth.png";
+
+var sco =  new Audio();
+sco.src= "sounds/hdiyl.mp3";
+
+var gap = 85;
+var constant;
+
+var bX = 10;
+var bY = 150;
+
+var gravity = 1.5;
+
+var score = 0;
+
+document.addEventListener("keydown",moveUp);
+
+function moveUp(){
+    bY = bY -25;
+    fly.play();
+}
+
+var pipe = [];
+
+pipe[0] = {
+  x : cvs.width,
+  y : 0
+};
+
+function draw(){
+     
+    bg = document.getElementById("bg");
+    ctx.drawImage(bg,0,0);
+    for(var i=0;i<pipe.length;i++){
+        constant = pipeNorth.height +gap;
+        pipeNorth= document.getElementById("pipeNorth");
+        ctx.drawImage(pipeNorth,pipe[i].x,pipe[i].y);
+        pipeSouth = document.getElementById("pipeSouth");
+        ctx.drawImage(pipeSouth,pipe[i].x,pipe[i].y + constant);
+
+        pipe[i].x--;
+
+        if(pipe[i].x ==125){
+            pipe.push({
+                  x : cvs.width,
+                  y : Math.floor(Math.random()*pipeNorth.height)-pipeNorth.height
+            });
+        }
+
+        if( bX + bird.width >= pipe[i].x && bX <= pipe[i].x + pipeNorth.width && (bY <= pipe[i].y + pipeNorth.height || bY+bird.height >= pipe[i].y+constant) || bY + bird.height >=  cvs.height - fg.height){
+
+            location.reload();
+        }
+        if(pipe[i].x==5){
+            score++;
+            var sc = document.getElementById("h1");
+            sc.innerHTML ="score : " + score;
+        }
+    }
+    fg = document.getElementById("fg");
+    ctx.drawImage(fg,0,cvs.height- fg.height);
+    bird = document.getElementById("bird");
+    ctx.drawImage(bird,bX,bY);
+    bY = bY + gravity;
+    requestAnimationFrame(draw);
+    ctx.fillText("Score : "+score,10,cvs.height-20);
+}
+sco.play();
+draw();
